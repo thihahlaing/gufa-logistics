@@ -378,6 +378,7 @@ export default function BookingPage() {
             </div>
           </div>
         )}
+        </main>
       </div>
     </>
   );
