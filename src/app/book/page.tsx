@@ -26,6 +26,24 @@ export default function BookingPage() {
   const [newMessage, setNewMessage] = useState('');
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
+  const [isMapReady, setMapReady] = useState(false);
+  const [drawerHeight, setDrawerHeight] = useState(300);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const vh = window.innerHeight;
+      const mapContainer = document.getElementById('map-container');
+      if (mapContainer) {
+        const mapHeight = vh * 0.65;
+        mapContainer.style.height = `${mapHeight}px`;
+        setDrawerHeight(vh - mapHeight);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Map State
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -196,12 +214,39 @@ export default function BookingPage() {
 
   const styles: { [key: string]: CSSProperties } = {
     // Layout
-    mainContent: { flexGrow: 1, position: 'relative', overflow: 'hidden' },
-    map: { position: 'absolute', top: 0, left: 0, right: 0, height: '65%', zIndex: 1 },
+    mainContent: { flexGrow: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' },
+    mapContainer: { flexGrow: 1, zIndex: 1 },
     header: { position: 'absolute', top: '20px', left: '20px', right: '20px', zIndex: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
     menuButton: { border: 'none', background: 'white', cursor: 'pointer', borderRadius: '50%', padding: '10px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' },
     headerLogo: { height: '40px' },
-    drawer: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '100%', backgroundColor: 'white', borderTopLeftRadius: '32px', borderTopRightRadius: '32px', boxShadow: '0 -10px 30px rgba(0,0,0,0.1)', zIndex: 10, transition: 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)', transform: orderStatus === 'idle' ? 'translateY(60%)' : 'translateY(100%)', overflowY: 'auto', paddingBottom: '120px', boxSizing: 'border-box' },
+    drawer: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      height: `${drawerHeight}px`,
+      backgroundColor: 'white',
+      borderTopLeftRadius: '32px',
+      borderTopRightRadius: '32px',
+      boxShadow: '0 -10px 30px rgba(0,0,0,0.1)',
+      zIndex: 10,
+      transition: 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)',
+      transform: orderStatus === 'idle' ? 'translateY(0)' : `translateY(${drawerHeight}px)`,
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    stickyFooter: {
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: 'white',
+      padding: '10px 20px 20px 20px',
+      borderTop: '1px solid #eee',
+      boxShadow: '0 -2px 10px rgba(0,0,0,0.05)',
+      zIndex: 50, // Increased z-index
+    },
+    drawerContent: { flexGrow: 1, overflowY: 'auto', padding: '0 20px' },
     // Booking Form
     routeBox: { display: 'flex', padding: '20px', alignItems: 'center' },
     routeLine: { display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '15px' },
@@ -267,7 +312,7 @@ export default function BookingPage() {
           </div>
 
           {/* Map */}
-          <div style={styles.map}>
+          <div id="map-container" style={styles.mapContainer}>
             {isLoaded ? (
               <GoogleMap
                 mapContainerStyle={{ width: '100%', height: '100%' }}
@@ -304,45 +349,53 @@ export default function BookingPage() {
             <div style={{ padding: '15px 20px', borderBottom: '1px solid #eee', textAlign: 'center' }}>
               <div style={{ width: '40px', height: '4px', backgroundColor: '#dbdbdb', borderRadius: '2px', margin: '0 auto' }}></div>
             </div>
-            <div style={styles.routeBox}>
-              <div style={styles.routeLine}>
-                <div style={{ width: '10px', height: '10px', backgroundColor: '#22c55e', borderRadius: '50%' }}></div>
-                <div style={{ width: '2px', height: '30px', backgroundColor: '#e0e0e0', margin: '4px 0' }}></div>
-                <div style={{ width: '10px', height: '10px', backgroundColor: '#f97316', borderRadius: '50%' }}></div>
+            <div style={styles.drawerContent}>
+              <div style={styles.routeBox}>
+                <div style={styles.routeLine}>
+                  <div style={{ width: '10px', height: '10px', backgroundColor: '#22c55e', borderRadius: '50%' }}></div>
+                  <div style={{ width: '2px', height: '30px', backgroundColor: '#e0e0e0', margin: '4px 0' }}></div>
+                  <div style={{ width: '10px', height: '10px', backgroundColor: '#f97316', borderRadius: '50%' }}></div>
+                </div>
+                <div style={{ flexGrow: 1 }}>
+                  <div style={styles.inputGroup}>
+                    <input type="text" placeholder="ပို့ရမည့်နေရာ" value={pickup} onChange={(e) => setPickup(e.target.value)} style={{ ...styles.inputField, marginBottom: '10px' }} />
+                    {pickup && <X size={18} color="#999" style={styles.clearButton} onClick={() => setPickup('')} />}
+                  </div>
+                  <div style={styles.inputGroup}>
+                    <input type="text" placeholder="ပို့ပေးရမည့်နေရာ" value={dropoff} onChange={(e) => setDropoff(e.target.value)} style={styles.inputField} />
+                    {dropoff && <X size={18} color="#999" style={styles.clearButton} onClick={() => setDropoff('')} />}
+                  </div>
+                </div>
               </div>
-              <div style={{ flexGrow: 1 }}>
-                <div style={styles.inputGroup}>
-                  <input type="text" placeholder="ပို့ရမည့်နေရာ" value={pickup} onChange={(e) => setPickup(e.target.value)} style={{ ...styles.inputField, marginBottom: '10px' }} />
-                  {pickup && <X size={18} color="#999" style={styles.clearButton} onClick={() => setPickup('')} />}
-                </div>
-                <div style={styles.inputGroup}>
-                  <input type="text" placeholder="ပို့ပေးရမည့်နေရာ" value={dropoff} onChange={(e) => setDropoff(e.target.value)} style={styles.inputField} />
-                  {dropoff && <X size={18} color="#999" style={styles.clearButton} onClick={() => setDropoff('')} />}
-                </div>
-              </div>
-            </div>
-            <div style={styles.vehicleSelector}>
-              {vehicleOptions.map(v => (
-                <div key={v.name} onClick={() => setActiveVehicle(v.name)} style={{ ...styles.vehicleCard, borderColor: activeVehicle === v.name ? '#f97316' : '#eee', borderWidth: activeVehicle === v.name ? '2px' : '1px' }}>
-                  <div style={{ fontSize: '28px' }}>{v.icon}</div>
-                  <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{v.name}</div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>{v.weight}</div>
-                </div>
-              ))}
-            </div>
-            <div style={styles.totalSection}>
-              <button onClick={handleConfirmBooking} style={styles.confirmButton} disabled={isBooking}>
-                {isBooking ? <LoadingSpinner /> : 
-                <>
-                  <span>အော်ဒါတင်မည်</span>
-                  <span style={{ backgroundColor: 'rgba(0,0,0,0.15)', padding: '5px 12px', borderRadius: '8px' }}>
-                    {totalPrice.toLocaleString()} Ks
-                  </span>
-                </>
-                }
-              </button>
             </div>
           </div>
+
+          {/* Sticky Footer for Booking */}
+          {orderStatus === 'idle' && (
+            <div style={styles.stickyFooter}>
+              <div style={styles.vehicleSelector}>
+                {vehicleOptions.map(v => (
+                  <div key={v.name} onClick={() => setActiveVehicle(v.name)} style={{ ...styles.vehicleCard, borderColor: activeVehicle === v.name ? '#f97316' : '#eee', borderWidth: activeVehicle === v.name ? '2px' : '1px' }}>
+                    <div style={{ fontSize: '28px' }}>{v.icon}</div>
+                    <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{v.name}</div>
+                    <div style={{ fontSize: '12px', color: '#666' }}>{v.weight}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={styles.totalSection}>
+                <button onClick={handleConfirmBooking} style={styles.confirmButton} disabled={isBooking}>
+                  {isBooking ? <LoadingSpinner /> : 
+                  <>
+                    <span>အော်ဒါတင်မည်</span>
+                    <span style={{ backgroundColor: 'rgba(0,0,0,0.15)', padding: '5px 12px', borderRadius: '8px' }}>
+                      {totalPrice.toLocaleString()} Ks
+                    </span>
+                  </>
+                  }
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Searching Overlay */}
           {orderStatus === 'searching' && (
