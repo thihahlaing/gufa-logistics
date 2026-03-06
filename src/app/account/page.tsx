@@ -5,13 +5,25 @@ import ProfileCard from '@/app/components/ProfileCard';
 import MenuCard from '@/app/components/MenuCard';
 import { Wallet, ClipboardList, MapPin, LifeBuoy } from 'lucide-react';
 
+import LogoutButton from '@/app/components/LogoutButton';
+import { useAuth } from '@/app/AuthProvider';
+
 const AccountPage = () => {
+  const { supabase } = useAuth();
+
+  const handleLogout = async () => {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+    window.location.href = '/login';
+  };
+
   const menuItems = {
     wallet: [
       { href: '/wallet', icon: <Wallet className="h-6 w-6 text-blue-600" />, title: 'Gufa Wallet', subtitle: 'Manage your payment methods' },
     ],
     activity: [
-      { href: '/orders', icon: <ClipboardList className="h-6 w-6 text-green-600" />, title: 'My Orders', subtitle: 'View your order history' },
+      { href: '/orders/history', icon: <ClipboardList className="h-6 w-6 text-green-600" />, title: 'Order History', subtitle: 'View your past and current orders' },
     ],
     places: [
       { href: '/places', icon: <MapPin className="h-6 w-6 text-purple-600" />, title: 'Saved Places', subtitle: 'Home, Work, and other locations' },
@@ -35,6 +47,10 @@ const AccountPage = () => {
           <MenuCard title="Activity" items={menuItems.activity} />
           <MenuCard title="Places" items={menuItems.places} />
           <MenuCard title="Help & Support" items={menuItems.support} />
+
+          <div className="mt-8">
+            <LogoutButton handleLogout={handleLogout} />
+          </div>
         </div>
       </div>
     </div>
