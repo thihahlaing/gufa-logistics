@@ -1,0 +1,1 @@
+export default function AccountPage() { return <h1>Coming Soon</h1>; }

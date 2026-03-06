@@ -1,0 +1,1 @@
+export default function OrdersPage() { return <h1>Coming Soon</h1>; }

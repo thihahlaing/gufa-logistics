@@ -1,0 +1,25 @@
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import AuthProvider from './AuthProvider';
+
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "Gufa Logistics",
+  description: "Your reliable logistics partner",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
+    </html>
+  );
+}

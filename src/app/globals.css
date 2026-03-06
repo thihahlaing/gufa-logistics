@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+/* Custom styles for Google Places Autocomplete dropdown */
+.pac-container {
+  z-index: 9999 !important; /* Ensure it appears above all other elements */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.pac-item {
+  padding: 12px 16px !important; /* Increase padding for better touch targets */
+  font-size: 16px !important; /* Larger font size for readability */
+  cursor: pointer;
+}
+
+.pac-item:hover {
+  background-color: #f3f4f6; /* Tailwind gray-100 */
+}
+
+.pac-item-query {
+  font-weight: 600;
+}
