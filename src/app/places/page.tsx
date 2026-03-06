@@ -1,1 +1,3 @@
-export default function PlacesPage() { return <h1>Coming Soon</h1>; }
+export default function PlacesPage() {
+  return <div className="p-8"><h1>Saved Places</h1><p>Coming Soon...</p></div>;
+}

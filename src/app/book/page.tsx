@@ -198,8 +198,9 @@ export default function BookingPage() {
     // Layout
     mainContent: { flexGrow: 1, position: 'relative', overflow: 'hidden' },
     map: { position: 'absolute', top: 0, left: 0, right: 0, height: '65%', zIndex: 1 },
-    header: { position: 'absolute', top: '20px', left: '20px', zIndex: 20, backgroundColor: 'white', borderRadius: '50%', padding: '10px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' },
-    menuButton: { border: 'none', background: 'none', cursor: 'pointer' },
+    header: { position: 'absolute', top: '20px', left: '20px', right: '20px', zIndex: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+    menuButton: { border: 'none', background: 'white', cursor: 'pointer', borderRadius: '50%', padding: '10px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' },
+    headerLogo: { height: '40px' },
     drawer: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '100%', backgroundColor: 'white', borderTopLeftRadius: '32px', borderTopRightRadius: '32px', boxShadow: '0 -10px 30px rgba(0,0,0,0.1)', zIndex: 10, transition: 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)', transform: orderStatus === 'idle' ? 'translateY(60%)' : 'translateY(100%)', overflowY: 'auto', paddingBottom: '120px', boxSizing: 'border-box' },
     // Booking Form
     routeBox: { display: 'flex', padding: '20px', alignItems: 'center' },
@@ -262,6 +263,7 @@ export default function BookingPage() {
             <button onClick={() => setSidebarOpen(true)} style={styles.menuButton}>
               <Menu size={24} color="#333" />
             </button>
+            <img src="/gufa-logo.png" alt="Gufa Logistics" style={styles.headerLogo} />
           </div>
 
           {/* Map */}

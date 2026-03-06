@@ -1,1 +1,3 @@
-export default function OrdersPage() { return <h1>Coming Soon</h1>; }
+export default function OrdersPage() {
+  return <div className="p-8"><h1>My Orders</h1><p>Coming Soon...</p></div>;
+}
