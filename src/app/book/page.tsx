@@ -15,7 +15,6 @@ import Sidebar from '../components/Sidebar';
 export default function BookingPage() {
   const { supabase, user, profile } = useAuth();
   // State Management
-  const [isMenuOpen, setMenuOpen] = useState(false);
   const [pickup, setPickup] = useState('');
   const [dropoff, setDropoff] = useState('');
   const [activeVehicle, setActiveVehicle] = useState('Motorbike');
@@ -196,16 +195,9 @@ export default function BookingPage() {
 
   const styles: { [key: string]: CSSProperties } = {
     // Layout
-    mainContainer: { maxWidth: '430px', margin: '0 auto', height: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', backgroundColor: '#e5e5e5', overflow: 'hidden' },
+    mainContent: { flexGrow: 1, position: 'relative', overflow: 'hidden' },
     map: { position: 'absolute', top: 0, left: 0, right: 0, height: '65%', zIndex: 1 },
     drawer: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '100%', backgroundColor: 'white', borderTopLeftRadius: '32px', borderTopRightRadius: '32px', boxShadow: '0 -10px 30px rgba(0,0,0,0.1)', zIndex: 10, transition: 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)', transform: orderStatus === 'idle' ? 'translateY(60%)' : 'translateY(100%)', overflowY: 'auto', paddingBottom: '120px', boxSizing: 'border-box' },
-    header: { position: 'absolute', top: '20px', left: '20px', right: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 2 },
-    // Side Menu
-    sideMenu: { position: 'fixed', top: 0, left: 0, width: '300px', height: '100%', backgroundColor: 'white', zIndex: 101, boxShadow: '5px 0 25px rgba(0,0,0,0.15)', transform: isMenuOpen ? 'translateX(0)' : 'translateX(-100%)', transition: 'transform 0.3s ease-out' },
-    menuBackdrop: { position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 100, opacity: isMenuOpen ? 1 : 0, transition: 'opacity 0.3s ease-out', pointerEvents: isMenuOpen ? 'auto' : 'none' },
-    menuHeader: { padding: '20px', borderBottom: '1px solid #eee', display: 'flex', alignItems: 'center' },
-    avatarInMenu: { width: '50px', height: '50px', borderRadius: '50%', marginRight: '15px' },
-    menuItem: { display: 'flex', alignItems: 'center', padding: '15px 20px', cursor: 'pointer', fontSize: '16px' },
     // Booking Form
     routeBox: { display: 'flex', padding: '20px', alignItems: 'center' },
     routeLine: { display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '15px' },
@@ -244,108 +236,100 @@ export default function BookingPage() {
   return (
     <>
       <style>{pulseAnimation}</style>
-      <div style={styles.mainContainer}>
-        {/* Header */}
-        <div style={styles.header}>
-          <button onClick={() => setMenuOpen(true)} style={{ background: 'white', border: 'none', borderRadius: '50%', padding: '10px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', cursor: 'pointer' }}>
-            <Menu size={24} color="#333" />
-          </button>
-        </div>
-
+      <div className="flex h-screen bg-gray-100">
         <Sidebar 
-          isOpen={isMenuOpen} 
-          onClose={() => setMenuOpen(false)} 
           user={user} 
           profile={profile} 
           handleLogout={handleLogout} 
         />
 
-        {/* Map */}
-        <div style={styles.map}>
-          {isLoaded ? (
-            <GoogleMap
-              mapContainerStyle={{ width: '100%', height: '100%' }}
-              center={mapCenter}
-              zoom={13}
-              options={{ styles: mapTheme, disableDefaultUI: true, zoomControl: true }}
-              onLoad={onMapLoad}
-              onUnmount={onUnmount}
-            >
-              {shouldFetchDirections && (
-                <DirectionsService
-                  options={{
-                    destination: dropoffPosition,
-                    origin: pickupPosition,
-                    travelMode: google.maps.TravelMode.DRIVING
-                  }}
-                  callback={directionsCallback}
-                />
-              )}
-              {directionsResponse && (
-                <DirectionsRenderer options={{ directions: directionsResponse, suppressMarkers: true, polylineOptions: { strokeColor: '#1e40af', strokeWeight: 5 } }} />
-              )}
-              <Marker position={pickupPosition} icon={{ url: pickupIcon, scaledSize: new google.maps.Size(30, 30) }} draggable={true} onDragEnd={onPickupDragEnd} />
-              <Marker position={dropoffPosition} icon={{ url: dropoffIcon, scaledSize: new google.maps.Size(30, 30) }} />
-              {orderStatus === 'assigned' && carPath[carPathIndex] && (
-                <Marker position={carPath[carPathIndex]} icon={{ url: carIcon, scaledSize: new google.maps.Size(40, 40), anchor: new google.maps.Point(20, 20) }} />
-              )}
-            </GoogleMap>
-          ) : <p>Loading Map...</p>}
-        </div>
+        <main style={styles.mainContent}>
+          {/* Map */}
+          <div style={styles.map}>
+            {isLoaded ? (
+              <GoogleMap
+                mapContainerStyle={{ width: '100%', height: '100%' }}
+                center={mapCenter}
+                zoom={13}
+                options={{ styles: mapTheme, disableDefaultUI: true, zoomControl: true }}
+                onLoad={onMapLoad}
+                onUnmount={onUnmount}
+              >
+                {shouldFetchDirections && (
+                  <DirectionsService
+                    options={{
+                      destination: dropoffPosition,
+                      origin: pickupPosition,
+                      travelMode: google.maps.TravelMode.DRIVING
+                    }}
+                    callback={directionsCallback}
+                  />
+                )}
+                {directionsResponse && (
+                  <DirectionsRenderer options={{ directions: directionsResponse, suppressMarkers: true, polylineOptions: { strokeColor: '#1e40af', strokeWeight: 5 } }} />
+                )}
+                <Marker position={pickupPosition} icon={{ url: pickupIcon, scaledSize: new google.maps.Size(30, 30) }} draggable={true} onDragEnd={onPickupDragEnd} />
+                <Marker position={dropoffPosition} icon={{ url: dropoffIcon, scaledSize: new google.maps.Size(30, 30) }} />
+                {orderStatus === 'assigned' && carPath[carPathIndex] && (
+                  <Marker position={carPath[carPathIndex]} icon={{ url: carIcon, scaledSize: new google.maps.Size(40, 40), anchor: new google.maps.Point(20, 20) }} />
+                )}
+              </GoogleMap>
+            ) : <p>Loading Map...</p>}
+          </div>
 
-        {/* Booking Drawer */}
-        <div style={styles.drawer}>
-          <div style={{ padding: '15px 20px', borderBottom: '1px solid #eee', textAlign: 'center' }}>
-            <div style={{ width: '40px', height: '4px', backgroundColor: '#dbdbdb', borderRadius: '2px', margin: '0 auto' }}></div>
-          </div>
-          <div style={styles.routeBox}>
-            <div style={styles.routeLine}>
-              <div style={{ width: '10px', height: '10px', backgroundColor: '#22c55e', borderRadius: '50%' }}></div>
-              <div style={{ width: '2px', height: '30px', backgroundColor: '#e0e0e0', margin: '4px 0' }}></div>
-              <div style={{ width: '10px', height: '10px', backgroundColor: '#f97316', borderRadius: '50%' }}></div>
+          {/* Booking Drawer */}
+          <div style={styles.drawer}>
+            <div style={{ padding: '15px 20px', borderBottom: '1px solid #eee', textAlign: 'center' }}>
+              <div style={{ width: '40px', height: '4px', backgroundColor: '#dbdbdb', borderRadius: '2px', margin: '0 auto' }}></div>
             </div>
-            <div style={{ flexGrow: 1 }}>
-              <div style={styles.inputGroup}>
-                <input type="text" placeholder="ပို့ရမည့်နေရာ" value={pickup} onChange={(e) => setPickup(e.target.value)} style={{ ...styles.inputField, marginBottom: '10px' }} />
-                {pickup && <X size={18} color="#999" style={styles.clearButton} onClick={() => setPickup('')} />}
+            <div style={styles.routeBox}>
+              <div style={styles.routeLine}>
+                <div style={{ width: '10px', height: '10px', backgroundColor: '#22c55e', borderRadius: '50%' }}></div>
+                <div style={{ width: '2px', height: '30px', backgroundColor: '#e0e0e0', margin: '4px 0' }}></div>
+                <div style={{ width: '10px', height: '10px', backgroundColor: '#f97316', borderRadius: '50%' }}></div>
               </div>
-              <div style={styles.inputGroup}>
-                <input type="text" placeholder="ပို့ပေးရမည့်နေရာ" value={dropoff} onChange={(e) => setDropoff(e.target.value)} style={styles.inputField} />
-                {dropoff && <X size={18} color="#999" style={styles.clearButton} onClick={() => setDropoff('')} />}
+              <div style={{ flexGrow: 1 }}>
+                <div style={styles.inputGroup}>
+                  <input type="text" placeholder="ပို့ရမည့်နေရာ" value={pickup} onChange={(e) => setPickup(e.target.value)} style={{ ...styles.inputField, marginBottom: '10px' }} />
+                  {pickup && <X size={18} color="#999" style={styles.clearButton} onClick={() => setPickup('')} />}
+                </div>
+                <div style={styles.inputGroup}>
+                  <input type="text" placeholder="ပို့ပေးရမည့်နေရာ" value={dropoff} onChange={(e) => setDropoff(e.target.value)} style={styles.inputField} />
+                  {dropoff && <X size={18} color="#999" style={styles.clearButton} onClick={() => setDropoff('')} />}
+                </div>
               </div>
             </div>
+            <div style={styles.vehicleSelector}>
+              {vehicleOptions.map(v => (
+                <div key={v.name} onClick={() => setActiveVehicle(v.name)} style={{ ...styles.vehicleCard, borderColor: activeVehicle === v.name ? '#f97316' : '#eee', borderWidth: activeVehicle === v.name ? '2px' : '1px' }}>
+                  <div style={{ fontSize: '28px' }}>{v.icon}</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{v.name}</div>
+                  <div style={{ fontSize: '12px', color: '#666' }}>{v.weight}</div>
+                </div>
+              ))}
+            </div>
+            <div style={styles.totalSection}>
+              <button onClick={handleConfirmBooking} style={styles.confirmButton} disabled={isBooking}>
+                {isBooking ? <LoadingSpinner /> : 
+                <>
+                  <span>အော်ဒါတင်မည်</span>
+                  <span style={{ backgroundColor: 'rgba(0,0,0,0.15)', padding: '5px 12px', borderRadius: '8px' }}>
+                    {totalPrice.toLocaleString()} Ks
+                  </span>
+                </>
+                }
+              </button>
+            </div>
           </div>
-          <div style={styles.vehicleSelector}>
-            {vehicleOptions.map(v => (
-              <div key={v.name} onClick={() => setActiveVehicle(v.name)} style={{ ...styles.vehicleCard, borderColor: activeVehicle === v.name ? '#f97316' : '#eee', borderWidth: activeVehicle === v.name ? '2px' : '1px' }}>
-                <div style={{ fontSize: '28px' }}>{v.icon}</div>
-                <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{v.name}</div>
-                <div style={{ fontSize: '12px', color: '#666' }}>{v.weight}</div>
-              </div>
-            ))}
-          </div>
-          <div style={styles.totalSection}>
-            <button onClick={handleConfirmBooking} style={styles.confirmButton} disabled={isBooking}>
-              {isBooking ? <LoadingSpinner /> : 
-              <>
-                <span>အော်ဒါတင်မည်</span>
-                <span style={{ backgroundColor: 'rgba(0,0,0,0.15)', padding: '5px 12px', borderRadius: '8px' }}>
-                  {totalPrice.toLocaleString()} Ks
-                </span>
-              </>
-              }
-            </button>
-          </div>
-        </div>
 
-        {/* Searching Overlay */}
-        {orderStatus === 'searching' && (
-          <div style={styles.searchingContainer}>
-            <div style={styles.radar}>
-              <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'rgba(249, 115, 22, 0.2)' }}></div>
-            </div>
-            <p style={{ marginTop: '25px', fontSize: '18px', color: '#333' }}>Searching for your Gufa Driver...</p>
-            <p style={{ color: '#666' }}>သင့်အတွက် Gufa ဒရိုင်ဘာရှာဖွေနေသည်...</p>
+          {/* Searching Overlay */}
+          {orderStatus === 'searching' && (
+            <div style={styles.searchingContainer}>
+              <div style={styles.radar}>
+                <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'rgba(249, 115, 22, 0.2)' }}></div>
+              </div>
+              <p style={{ marginTop: '25px', fontSize: '18px', color: '#333' }}>Searching for your Gufa Driver...</p>
+              <p style={{ color: '#666' }}>သင့်အတွက် Gufa ဒရိုင်ဘာရှာဖွေနေသည်...</p>
             <button onClick={() => setOrderStatus('idle')} style={{ ...styles.actionButton, backgroundColor: '#ef4444', color: 'white', marginTop: '20px', width: 'calc(100% - 80px)' }}>Cancel</button>
           </div>
         )}
