@@ -11,7 +11,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import Sidebar from '../components/Sidebar';
 
 
-// Main Component
+// Main Component - Force Rebuild
 export default function BookingPage() {
   const { supabase, user, profile } = useAuth();
   // State Management
