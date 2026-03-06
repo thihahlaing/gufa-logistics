@@ -24,6 +24,7 @@ export default function BookingPage() {
     { id: 1, text: 'Hi, I am on my way.', sender: 'driver' },
   ]);
   const [newMessage, setNewMessage] = useState('');
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
 
   // Map State
@@ -197,6 +198,8 @@ export default function BookingPage() {
     // Layout
     mainContent: { flexGrow: 1, position: 'relative', overflow: 'hidden' },
     map: { position: 'absolute', top: 0, left: 0, right: 0, height: '65%', zIndex: 1 },
+    header: { position: 'absolute', top: '20px', left: '20px', zIndex: 20, backgroundColor: 'white', borderRadius: '50%', padding: '10px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' },
+    menuButton: { border: 'none', background: 'none', cursor: 'pointer' },
     drawer: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '100%', backgroundColor: 'white', borderTopLeftRadius: '32px', borderTopRightRadius: '32px', boxShadow: '0 -10px 30px rgba(0,0,0,0.1)', zIndex: 10, transition: 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)', transform: orderStatus === 'idle' ? 'translateY(60%)' : 'translateY(100%)', overflowY: 'auto', paddingBottom: '120px', boxSizing: 'border-box' },
     // Booking Form
     routeBox: { display: 'flex', padding: '20px', alignItems: 'center' },
@@ -237,13 +240,30 @@ export default function BookingPage() {
     <>
       <style>{pulseAnimation}</style>
       <div className="flex h-screen bg-gray-100">
-        <Sidebar 
-          user={user} 
-          profile={profile} 
-          handleLogout={handleLogout} 
-        />
+        {/* Sidebar */}
+        <div className={`fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out z-50`}>
+          <Sidebar 
+            user={user} 
+            profile={profile} 
+            handleLogout={handleLogout} 
+          />
+        </div>
+
+        {isSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black opacity-50 z-40" 
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+        )}
 
         <main style={styles.mainContent}>
+          {/* Header */}
+          <div style={styles.header}>
+            <button onClick={() => setSidebarOpen(true)} style={styles.menuButton}>
+              <Menu size={24} color="#333" />
+            </button>
+          </div>
+
           {/* Map */}
           <div style={styles.map}>
             {isLoaded ? (
