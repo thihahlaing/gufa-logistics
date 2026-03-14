@@ -26,8 +26,8 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (error) {
-      console.error('Authentication Error:', error.message)
-      return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+      console.error('PKCE Auth Error:', error.message)
+      return new Response(error.message, { status: 500 })
     }
 
     if (data.user) {
@@ -41,6 +41,7 @@ export async function GET(request: Request) {
         // If there was an error and it wasn't a "not found" error, log it
         if (profileError && profileError.code !== 'PGRST116') {
             console.error('Error fetching profile:', profileError)
+            return new Response(profileError.message, { status: 500 })
         }
 
         // If no profile exists, create one
@@ -53,12 +54,14 @@ export async function GET(request: Request) {
             if (insertError) {
                 console.error('Error creating profile:', insertError.message);
                 // Redirect to an error page, as the user can't proceed without a profile
-                return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+                return new Response(insertError.message, { status: 500 });
             }
         }
 
       return NextResponse.redirect(`${origin}${next}`)
     }
+
+    return new Response('Successfully authenticated, but no user data found.', { status: 500 })
   }
 
   // return the user to an error page with instructions
