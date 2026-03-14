@@ -5,6 +5,18 @@ import { cookies } from 'next/headers'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
+  const error = searchParams.get('error')
+  const errorDescription = searchParams.get('error_description')
+
+  // If Google returns an error parameter, log it and return an error response
+  if (error) {
+    console.error(`Google Auth Error: ${error} - ${errorDescription}`)
+    return new Response(
+      `Error during Google authentication: ${error} - ${errorDescription}`,
+      { status: 500 }
+    )
+  }
+
   // if "next" is in param, use it as the redirect URL
   const next = searchParams.get('next') ?? '/'
 
