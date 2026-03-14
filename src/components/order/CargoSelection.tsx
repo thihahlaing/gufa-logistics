@@ -27,13 +27,13 @@ export function CargoSelection() {
               className={cn(
                 'cursor-pointer transition-all',
                 selectedVehicle === vehicle.name
-                  ? 'ring-2 ring-black shadow-lg'
+                  ? 'ring-2 ring-primary shadow-lg'
                   : 'hover:shadow-md'
               )}
             >
-              <CardContent className="flex flex-col items-center justify-center p-4">
-                <Icon className="h-8 w-8 mb-2" />
-                <span className="text-sm font-medium">{vehicle.name}</span>
+              <CardContent className="flex flex-col items-center justify-center p-6">
+                <Icon className="w-12 h-12 mb-2" />
+                <span className="font-semibold">{vehicle.name}</span>
               </CardContent>
             </Card>
           );

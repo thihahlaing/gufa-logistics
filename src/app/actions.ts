@@ -3,6 +3,29 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
+export async function acceptOrder(orderId: number) {
+    const supabase = await createClient();
+    
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        throw new Error("User not found, cannot accept order.");
+    }
+    
+    // In a real app, you would fetch the order price and calculate commission
+    const MOCK_COMMISSION = 500; // Mock commission
+
+    // Mock updating the order status
+    console.log(`Order ${orderId} accepted by ${user.id}. Commission: ${MOCK_COMMISSION}`);
+    
+    // Mock updating driver's balance
+    console.log(`Deducting ${MOCK_COMMISSION} from ${user.id}'s balance.`);
+
+    revalidatePath('/driver/dashboard');
+
+    return { error: null, commission: MOCK_COMMISSION };
+}
+
 export async function createOrder(formData: FormData) {
     'use server';
     const supabase = await createClient();

@@ -1,29 +1,30 @@
 import { CargoSelection } from "@/components/order/CargoSelection";
 import { AddressInput } from "@/components/order/AddressInput";
 import { EstimatedPrice } from "@/components/order/EstimatedPrice";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-8 h-screen bg-gray-50">
-      {/* Left Panel: Order Details */}
-      <div className="lg:col-span-1">
-        <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col h-full">
-          <h2 className="text-2xl font-bold mb-6">Create a New Order</h2>
-          
-          <div className="space-y-6 flex-grow">
-            <AddressInput />
-            <CargoSelection />
-          </div>
+    <div className="relative min-h-screen bg-gray-100 p-4">
+      {/* Map placeholder */}
+      <div className="absolute inset-0 bg-gray-300 z-0"></div>
 
-          <div className="mt-6">
-            <EstimatedPrice />
-          </div>
-        </div>
-      </div>
-
-      {/* Right Panel: Interactive Map */}
-      <div className="lg:col-span-2 bg-gray-200 rounded-xl shadow-lg flex items-center justify-center h-full">
-        <p className="text-gray-500">Map will be displayed here.</p>
+      <div className="relative z-10 flex justify-center items-start pt-10">
+        <Card className="w-full max-w-md shadow-2xl bg-white/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-center text-2xl font-bold">Create a New Order</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-6">
+              <AddressInput label="Pickup Location" />
+              <AddressInput label="Dropoff Location" />
+              <CargoSelection />
+              <EstimatedPrice />
+              <Button type="submit" className="w-full text-lg py-6">Confirm Order</Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
