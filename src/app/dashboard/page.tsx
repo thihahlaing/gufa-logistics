@@ -1,46 +1,30 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
-import DriverDashboard from "@/components/DriverDashboard";
-import MerchantDashboard from "@/components/MerchantDashboard";
+import { CargoSelection } from "@/components/order/CargoSelection";
+import { AddressInput } from "@/components/order/AddressInput";
+import { EstimatedPrice } from "@/components/order/EstimatedPrice";
 
-export default async function DashboardPage() {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data?.user) {
-    redirect("/"); // Redirect to home to login
-  }
-
-  const role = data.user.app_metadata?.role;
-
-  if (role === 'driver') {
-    console.log('Driver ID being queried:', data.user.id);
-    let { data: profile } = await supabase.from('profiles').select('*, orders(*)').eq('id', data.user.id).single();
-    
-    if (!profile) {
-        console.log('Profile not found in DB, injecting dummy profile for UI testing.');
-        profile = {
-            id: data.user.id,
-            balance: 0,
-            status: 'active',
-            orders: [] 
-        };
-    }
-
-    const assignedOrders = profile.orders.filter((o: any) => o.status === 'assigned') || [];
-    const { data: availableOrders } = await supabase.from('orders').select('*').eq('status', 'pending');
-
-    return <DriverDashboard user={data.user} profile={profile} initialAssignedOrders={assignedOrders} initialAvailableOrders={availableOrders || []} />
-  }
-
-  if (role === 'merchant') {
-      return <MerchantDashboard user={data.user} />;
-  }
-
-  // Fallback for no role or unknown role
+export default function DashboardPage() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-        <p className="text-red-500 text-lg">Role not found or is invalid. Please log in again.</p>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-8 h-screen bg-gray-50">
+      {/* Left Panel: Order Details */}
+      <div className="lg:col-span-1">
+        <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col h-full">
+          <h2 className="text-2xl font-bold mb-6">Create a New Order</h2>
+          
+          <div className="space-y-6 flex-grow">
+            <AddressInput />
+            <CargoSelection />
+          </div>
+
+          <div className="mt-6">
+            <EstimatedPrice />
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel: Interactive Map */}
+      <div className="lg:col-span-2 bg-gray-200 rounded-xl shadow-lg flex items-center justify-center h-full">
+        <p className="text-gray-500">Map will be displayed here.</p>
+      </div>
     </div>
   );
 }
