@@ -6,7 +6,7 @@ import { cookies } from 'next/headers'
 const MOCK_USER = {
   id: 'test-user-001',
   email: 'test@example.com',
-  role: 'merchant',
+  app_metadata: { role: 'merchant' },
   // Add any other user properties your application might need
 };
 
@@ -26,12 +26,18 @@ export async function createClient() {
         // Add any other auth methods you might call
       },
       // Add other Supabase client methods if needed, for example, from()
-      from: (table: string) => ({
-        // Mock 'from' to allow chaining
-        select: () => ({ eq: () => ({ single: () => ({ data: {}, error: null }) }) }),
-        insert: () => ({ data: {}, error: null }),
-        // Add other chainable methods as needed
-      }),
+      from: (table: string) => {
+        const mockChain: any = {
+          select: () => mockChain,
+          insert: () => mockChain,
+          update: () => mockChain,
+          order: () => mockChain,
+          eq: () => mockChain,
+          single: () => ({ data: { balance: 100 }, error: null }),
+          then: (resolve: any) => resolve({ data: [{id: 1, pickup_address: 'A', dropoff_address: 'B', status: 'pending', cash_collected: 0}], error: null }),
+        };
+        return mockChain;
+      },
     };
   }
 
@@ -42,21 +48,24 @@ export async function createClient() {
     process.env.SUPABASE_SECRET_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
+        async get(name: string) {
+          const cookieJar = await cookieStore;
+          return cookieJar.get(name)?.value;
         },
-        set(name: string, value: string, options: CookieOptions) {
+        async set(name: string, value: string, options: CookieOptions) {
+          const cookieJar = await cookieStore;
           try {
-            cookieStore.set({ name, value, ...options })
+            cookieJar.set({ name, value, ...options });
           } catch (error) {
             // The `set` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
             // user sessions.
           }
         },
-        remove(name: string, options: CookieOptions) {
+        async remove(name: string, options: CookieOptions) {
+          const cookieJar = await cookieStore;
           try {
-            cookieStore.set({ name, value: '', ...options })
+            cookieJar.set({ name, value: '', ...options });
           } catch (error) {
             // The `remove` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing

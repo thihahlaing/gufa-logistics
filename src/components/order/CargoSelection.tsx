@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Motorcycle, Car, Truck } from 'lucide-react';
+import { Motorbike, Car, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const vehicleTypes = [
-  { name: 'Motorbike', icon: Motorcycle },
+const cargoTypes = [
+  { name: 'Bike', icon: Motorbike },
   { name: 'Car', icon: Car },
   { name: 'Truck', icon: Truck },
 ];
@@ -18,7 +18,7 @@ export function CargoSelection() {
     <div>
       <h3 className="text-lg font-semibold mb-4">Select Vehicle</h3>
       <div className="grid grid-cols-3 gap-4">
-        {vehicleTypes.map((vehicle) => {
+        {cargoTypes.map((vehicle) => {
           const Icon = vehicle.icon;
           return (
             <Card

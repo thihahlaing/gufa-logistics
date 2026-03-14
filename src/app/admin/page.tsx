@@ -48,7 +48,7 @@ export default async function AdminPage({ searchParams }: any) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {orders?.map(order => (
+                                {orders?.map((order: any) => (
                                     <tr key={order.id}>
                                         <td className="px-4 py-2">{order.id}</td>
                                         <td className="px-4 py-2">{order.pickup_address} to {order.dropoff_address}</td>

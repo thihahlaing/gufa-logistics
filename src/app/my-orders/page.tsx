@@ -32,7 +32,7 @@ export default async function MyOrdersPage() {
          <div className="bg-white p-8 rounded-xl shadow-lg">
              <h2 className="text-3xl font-bold text-gray-800 mb-6">Order History</h2>
              <div className="space-y-4">
-                {orders.map(order => (
+                {orders.map((order: any) => (
                     <div key={order.id} className="border rounded-lg p-4">
                         <p><strong>Route:</strong> {order.pickup_address} to {order.dropoff_address}</p>
                         <p><strong>Cargo:</strong> {order.cargo_description}</p>
