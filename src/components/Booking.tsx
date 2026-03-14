@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
 export default function Booking() {
@@ -20,7 +19,7 @@ export default function Booking() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      toast.error('You must be logged in to book.');
+      console.error('You must be logged in to book.');
       setLoading(false);
       return;
     }
@@ -31,6 +30,7 @@ export default function Booking() {
       pickup_location: pickup,
       dropoff_location: dropoff,
       price: parseFloat(price),
+      status: 'searching',
       pickup_lat: 34.0522,
       pickup_lng: -118.2437,
       dropoff_lat: 36.1699,
@@ -40,12 +40,11 @@ export default function Booking() {
     const { error } = await supabase.from('orders').insert(newOrder);
 
     if (error) {
-      toast.error(error.message);
-      setLoading(false);
+      console.error(error);
     } else {
-      toast.success('Order created successfully!');
-      router.push('/'); // Redirect to dashboard on success
+      router.push('/');
     }
+    setLoading(false);
   };
 
   return (

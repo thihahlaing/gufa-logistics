@@ -1,8 +1,8 @@
-export default function AuthError() {
+export default function AuthCodeError() {
     return (
         <div>
             <h1>Authentication Error</h1>
-            <p>Sorry, we were unable to sign you in. Please try again.</p>
+            <p>Sorry, we couldn't sign you in. Please try again.</p>
         </div>
     )
 }

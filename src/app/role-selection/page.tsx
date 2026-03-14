@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
 
 export default function RoleSelectionPage() {
   const supabase = createClient();
@@ -17,45 +16,39 @@ export default function RoleSelectionPage() {
     if (user) {
       const { error } = await supabase
         .from('profiles')
-        .update({ role: role })
+        .update({ role })
         .eq('id', user.id);
 
       if (error) {
-        toast.error(`Failed to set role: ${error.message}`);
+        console.error('Error updating role:', error);
         setLoading(false);
       } else {
-        toast.success(`Role set to ${role}!`);
-        // Force a reload to ensure middleware re-evaluates
-        window.location.href = '/';
+        router.push('/dashboard');
       }
     } else {
-        toast.error('User not found. Please log in again.');
-        setLoading(false);
+      router.push('/login');
     }
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24 gap-8">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold mb-4">Select Your Role</h1>
-        <p className="text-gray-400 mb-8">Choose how you want to use the platform.</p>
-        <div className="flex justify-center gap-6">
-          <button 
-            onClick={() => handleSelectRole('customer')}
-            disabled={loading}
-            className="w-48 bg-blue-600 text-white text-center font-bold py-3 px-4 rounded-lg hover:bg-blue-700 disabled:bg-gray-500"
-          >
-            I am a Customer
-          </button>
-          <button 
-            onClick={() => handleSelectRole('driver')}
-            disabled={loading}
-            className="w-48 bg-green-600 text-white text-center font-bold py-3 px-4 rounded-lg hover:bg-green-700 disabled:bg-gray-500"
-          >
-            I am a Driver
-          </button>
-        </div>
+    <div className="flex min-h-screen flex-col items-center justify-center p-24">
+      <h1 className="text-4xl font-bold mb-8">Choose Your Role</h1>
+      <div className="flex gap-4">
+        <button
+          onClick={() => handleSelectRole('customer')}
+          disabled={loading}
+          className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-500 disabled:bg-gray-400"
+        >
+          I'm a Customer
+        </button>
+        <button
+          onClick={() => handleSelectRole('driver')}
+          disabled={loading}
+          className="rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-500 disabled:bg-gray-400"
+        >
+          I'm a Driver
+        </button>
       </div>
-    </main>
+    </div>
   );
 }

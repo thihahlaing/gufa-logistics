@@ -1,7 +1,15 @@
-export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-5xl font-bold">Hello Next.js</h1>
-    </main>
-  );
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+
+export default async function HomePage() {
+  const supabase = createClient()
+
+  const { data, error } = await supabase.auth.getUser()
+  if (data.user) {
+    redirect('/dashboard')
+  } else {
+    redirect('/login')
+  }
+
+  return null
 }
